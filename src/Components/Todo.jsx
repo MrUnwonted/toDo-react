@@ -11,11 +11,23 @@ import {MdDelete} from 'react-icons/md'
 function Todo() {
   const [todo, setTodo] = useState('')
   const[todos, setTodos] = useState([])
+  const [editId,setEditId] = useState(0)
  
   const addTodo = () => {
-    setTodos([...todos,{list: todo, id : Date.now(), status : false}])
-    console.log(todos);
-    setTodo('')
+    if(todo !== ''){
+      setTodos([...todos,{list: todo, id : Date.now(), status : false}])
+      console.log(todos);
+      setTodo('')
+    }
+    if(editId){
+      const editTodo = todos.find((todo) => todo.id == editId)
+      const updateTodo = todos.map((to) => to.id === editTodo.id
+      ? (to = {id: to.id, list: todo}) 
+      : (to = {id: to.id, list: to.list}))
+      setTodos(updateTodo)
+      setEditId(0)
+      setTodo('')
+    }
   }
 
   const handleSubmit = (e) => {
@@ -45,6 +57,7 @@ function Todo() {
   const onEdit = (id) => {
     const editTodo = todos.find((to) => to.id === id)
     setTodo(editTodo.list)
+    setEditId(editTodo.id)
   }
 
 
@@ -53,7 +66,7 @@ function Todo() {
         <h2>TODO APP</h2>
         <form className='form-group' onSubmit={handleSubmit} >
             <input type="text" value={todo} ref={inputRef} placeholder='Enter your todo' className='form-control' onChange={(event) => setTodo(event.target.value) } /> 
-            <button onClick={addTodo} >ADD</button>
+            <button onClick={addTodo} > {editId ? 'EDIT' : 'ADD'} </button>
         </form>
         <div className='list'>
             <ul>
